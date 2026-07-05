@@ -378,7 +378,10 @@ function ContactStation(_: StationContentProps) {
   const { identity } = profile;
   return (
     <div className="mx-auto flex max-w-2xl flex-col items-center px-4 text-center">
-      <Eyebrow>End of the line · 07 / 07</Eyebrow>
+      <Eyebrow>
+        End of the line · {String(STATIONS.length).padStart(2, '0')} /{' '}
+        {String(STATIONS.length).padStart(2, '0')}
+      </Eyebrow>
       <h2
         id="s3d-contact"
         className={`${styles.neonTitle} mt-4 text-4xl font-black tracking-tight xl:text-5xl`}

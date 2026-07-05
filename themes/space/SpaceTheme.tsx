@@ -71,10 +71,14 @@ export default function SpaceTheme() {
           <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.18em] text-theme-accent">
             {profile.identity.titles.join(' · ')}
           </p>
-          <p className="mt-3 hidden text-sm leading-relaxed text-theme-muted sm:block">
+          <p
+            className={`${styles.introOptional} mt-3 hidden text-sm leading-relaxed text-theme-muted sm:block`}
+          >
             {profile.identity.tagline}
           </p>
-          <p className="mt-2 flex items-center gap-1.5 text-xs text-theme-muted">
+          <p
+            className={`${styles.introOptional} mt-2 flex items-center gap-1.5 text-xs text-theme-muted`}
+          >
             <MapPin size={12} aria-hidden="true" className="text-theme-accent2" />
             {profile.identity.location} · {profile.identity.org}
           </p>

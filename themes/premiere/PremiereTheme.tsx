@@ -31,6 +31,10 @@ export default function PremiereTheme() {
 
   const handleSelectAsset = useCallback((asset: ClipAsset) => {
     setActiveId(asset.id);
+    // Keep the two transports honest: a fresh clip rewinds the Source
+    // Monitor, so the timeline playhead rewinds with it. (Milestone clicks
+    // instead snap it to the clip's start — see Timeline.)
+    timelineRef.current?.setPlayhead(0);
     // Showcase assets double as Program Monitor cues.
     if (asset.id.startsWith(SHOWCASE_PREFIX)) {
       const index = Number(asset.id.slice(SHOWCASE_PREFIX.length));
@@ -40,6 +44,12 @@ export default function PremiereTheme() {
 
   const handleOpenPanel = useCallback((panelId: string) => {
     setActiveId(panelId);
+    timelineRef.current?.setPlayhead(0);
+    // Index-row navigation replaces the content under the user's focus —
+    // move focus to the revealed panel so keyboard reading continues there.
+    requestAnimationFrame(() => {
+      document.getElementById(`sm-panel-${panelId}`)?.focus();
+    });
   }, []);
 
   const handleSelectMilestone = useCallback((milestone: MilestoneEntry) => {

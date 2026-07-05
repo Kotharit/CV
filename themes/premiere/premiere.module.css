@@ -158,6 +158,27 @@
 .assetRow:hover {
   background: #262626;
 }
+
+/* Column header row shares the asset grid so cells stay aligned. */
+.assetHead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 58px minmax(0, 88px);
+  align-items: center;
+  gap: 8px;
+}
+
+/* Below ~1100px the project panel gets narrow: drop the decorative codec
+   column so the asset NAMES (the actual navigation) always win the space. */
+@media (max-width: 1100px) {
+  .assetRow,
+  .assetHead {
+    grid-template-columns: minmax(0, 1fr) 58px;
+  }
+  .assetInfo {
+    display: none;
+  }
+}
+
 .assetSelected,
 .assetSelected:hover {
   background: rgba(63, 138, 224, 0.24);
@@ -411,6 +432,40 @@
   top: 13px;
   width: 100%;
   height: calc(100% - 13px);
+}
+
+/* Audio clips: flat, slightly darkened body so the waveform SVG reads like a
+   real NLE audio lane (no film-strip stripe). */
+.clipAudio {
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(0, 0, 0, 0.18) 55%,
+    rgba(0, 0, 0, 0.32) 100%
+  );
+}
+
+/* Source panel entrance: restarts each time a hidden panel is revealed. */
+.panelIn {
+  animation: panel-in 0.22s ease-out;
+}
+.panelIn:focus {
+  outline: none; /* programmatic focus target (index-row navigation) */
+}
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .panelIn {
+    animation: none;
+  }
 }
 
 /* Playhead ------------------------------------------------------------------- */

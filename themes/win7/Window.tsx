@@ -97,6 +97,40 @@ export function Win7Window({
     null,
   );
 
+  // Live desktop dimensions. Drag bounds are passed to framer as a PLAIN
+  // OBJECT derived from these + the current size: ref-based constraints are
+  // measured only once, at feature mount, while the window is still
+  // transformed by its spawn offset + enter scale — which skews the cached
+  // bounds and lets windows drag their title bar irrecoverably off-desktop.
+  // Object constraints are resolved fresh on every drag and never measured.
+  const [desktopSize, setDesktopSize] = useState({ w: 1024, h: 640 });
+  useEffect(() => {
+    const measure = () => {
+      const desktop = desktopRef.current;
+      if (desktop) {
+        setDesktopSize({ w: desktop.clientWidth, h: desktop.clientHeight });
+      }
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [desktopRef]);
+
+  const dragBounds = {
+    left: 0,
+    top: 0,
+    right: Math.max(0, desktopSize.w - size.w),
+    bottom: Math.max(0, desktopSize.h - size.h),
+  };
+
+  // Whenever the window or the desktop is resized, pull the window back
+  // fully on-desktop (skip while maximized — position is pinned at 0,0).
+  useEffect(() => {
+    if (maximized) return;
+    x.set(clamp(x.get(), 0, Math.max(0, desktopSize.w - size.w)));
+    y.set(clamp(y.get(), 0, Math.max(0, desktopSize.h - size.h)));
+  }, [desktopSize, size, maximized, x, y]);
+
   // Focus the dialog on open, and again when restored from the taskbar.
   useEffect(() => {
     rootRef.current?.focus({ preventScroll: true });
@@ -181,9 +215,13 @@ export function Win7Window({
     if (maximized) {
       const rect = restoreRect.current;
       if (rect) {
-        x.set(rect.x);
-        y.set(rect.y);
-        setSize({ w: rect.w, h: rect.h });
+        // The desktop may have shrunk while maximized — clamp the restored
+        // geometry so the window always comes back fully visible.
+        const w = clamp(rect.w, MIN_W, Math.max(MIN_W, desktopSize.w - 12));
+        const h = clamp(rect.h, MIN_H, Math.max(MIN_H, desktopSize.h - 12));
+        x.set(clamp(rect.x, 0, Math.max(0, desktopSize.w - w)));
+        y.set(clamp(rect.y, 0, Math.max(0, desktopSize.h - h)));
+        setSize({ w, h });
       }
       setMaximized(false);
     } else {
@@ -231,7 +269,7 @@ export function Win7Window({
       dragControls={dragControls}
       dragMomentum={false}
       dragElastic={0}
-      dragConstraints={desktopRef}
+      dragConstraints={dragBounds}
       initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.9 }}
       animate={
         minimized
@@ -244,8 +282,17 @@ export function Win7Window({
       }
       exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.92 }}
       transition={{ duration, ease: 'easeOut' }}
-      onPointerDownCapture={() => {
+      onPointerDownCapture={(event) => {
         if (!active) onFocus();
+        // Clicking non-interactive window content moves DOM focus onto the
+        // dialog itself (tabIndex=-1 isn't click-focusable natively), so
+        // Esc-to-close works after any click inside the window.
+        const target = event.target as HTMLElement;
+        if (
+          !target.closest('button, a, input, textarea, select, [tabindex], iframe, video')
+        ) {
+          rootRef.current?.focus({ preventScroll: true });
+        }
       }}
       onKeyDown={(event) => {
         if (event.key === 'Escape') {
@@ -257,7 +304,12 @@ export function Win7Window({
       <div
         className={styles.titleBar}
         onPointerDown={onTitlePointerDown}
-        onDoubleClick={toggleMaximize}
+        onDoubleClick={(event) => {
+          // A fast double-click on a caption button must not also toggle
+          // maximize (e.g. double-clicking Minimize would restore maximized).
+          if ((event.target as HTMLElement).closest('button')) return;
+          toggleMaximize();
+        }}
       >
         <Icon size={15} aria-hidden className={styles.titleIcon} />
         <span className={styles.titleText}>{title}</span>

@@ -14,6 +14,7 @@ import {
   type ExpertiseKey,
 } from '@/data/profile';
 import { framesToTimecode, getPanelMeta, milestonePanelId } from './assets';
+import styles from './premiere.module.css';
 
 interface SourcePanelsProps {
   activeId: string;
@@ -36,8 +37,16 @@ function Panel({
   activeId: string;
   children: ReactNode;
 }) {
+  // All panels stay mounted (SEO/no-JS); the CSS entrance animation restarts
+  // naturally whenever `hidden` flips off. tabIndex=-1 makes the panel a
+  // programmatic focus target for index-row navigation (see PremiereTheme).
   return (
-    <section id={`sm-panel-${id}`} hidden={activeId !== id} className="px-4 py-4 md:px-6 md:py-5">
+    <section
+      id={`sm-panel-${id}`}
+      hidden={activeId !== id}
+      tabIndex={-1}
+      className={`${styles.panelIn} px-4 py-4 md:px-6 md:py-5`}
+    >
       {children}
     </section>
   );

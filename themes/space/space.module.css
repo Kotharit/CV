@@ -194,3 +194,11 @@
     rgb(var(--accent-2-rgb) / 0)
   );
 }
+
+/* Short laptop viewports: collapse the intro card to name + hint so it
+   never overlaps the IT constellation star (~40% stage height). */
+@media (max-height: 760px) {
+  .introOptional {
+    display: none !important;
+  }
+}

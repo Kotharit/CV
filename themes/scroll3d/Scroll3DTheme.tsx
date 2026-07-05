@@ -149,6 +149,17 @@ function TunnelExperience() {
     el.scrollTop = ((el.scrollHeight - el.clientHeight) * index) / LAST;
   }, []);
 
+  // Window resizes change both the station heights and drei's scroll
+  // threshold, but drei only recomputes offset (and re-translates the DOM
+  // stations) inside its scroll handler — so mid-flight resizes desync the
+  // panels from the camera until the next wheel tick. A synthetic scroll
+  // event forces the recompute immediately.
+  useEffect(() => {
+    const onResize = () => scrollElRef.current?.dispatchEvent(new Event('scroll'));
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
   return (
     <div className="relative h-full w-full bg-[#070b16]">
       <Canvas

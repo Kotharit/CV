@@ -124,18 +124,31 @@ export function CrtExhibit({ item, index }: { item: ShowcaseItem; index: number 
   const [near, setNear] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
-  const [pinned, setPinned] = useState(false);
+  /**
+   * Click override: true = keep playing regardless of hover, false = paused
+   * regardless of hover, null = hover/focus decides. A "paused" override is
+   * released when the pointer/focus leaves so hovering plays again, and any
+   * override resets once the exhibit scrolls away.
+   */
+  const [override, setOverride] = useState<boolean | null>(null);
   const [videoFailed, setVideoFailed] = useState(false);
 
   const mp4Url = item.video.kind === 'mp4' ? item.video.url : null;
   const useCrt =
     webglSupported && !reducedMotion && !isMobile && mp4Url !== null && !videoFailed;
-  const playing = useCrt && near && (hovered || focused || pinned);
+  const playing = useCrt && near && (override ?? (hovered || focused));
+
+  useEffect(() => {
+    if (!near) setOverride(null);
+  }, [near]);
 
   const handleVideoError = useCallback(() => setVideoFailed(true), []);
 
   // Mount the Canvas only while the exhibit is near the viewport, so at most
   // a couple of GL contexts ever live at once. Disconnected on cleanup.
+  // The observer roots on the gallery scroller — with the default viewport
+  // root, the horizontal scroller's clipping defeats rootMargin and the
+  // 320px pre-warm never fires.
   useEffect(() => {
     if (!useCrt) return;
     const node = rootRef.current;
@@ -144,7 +157,10 @@ export function CrtExhibit({ item, index }: { item: ShowcaseItem; index: number 
       (entries) => {
         entries.forEach((entry) => setNear(entry.isIntersecting));
       },
-      { rootMargin: '160px 320px 160px 320px' },
+      {
+        root: node.closest('[data-gallery-root]'),
+        rootMargin: '160px 320px 160px 320px',
+      },
     );
     io.observe(node);
     return () => io.disconnect();
@@ -154,7 +170,10 @@ export function CrtExhibit({ item, index }: { item: ShowcaseItem; index: number 
   const handlePointerEnter = (e: ReactPointerEvent<HTMLButtonElement>) => {
     if (e.pointerType !== 'touch') setHovered(true);
   };
-  const handlePointerLeave = () => setHovered(false);
+  const handlePointerLeave = () => {
+    setHovered(false);
+    setOverride((o) => (o === false ? null : o)); // paused CRT re-arms on leave
+  };
   const handleFocus = (e: FocusEvent<HTMLButtonElement>) => {
     let visible = true;
     try {
@@ -164,7 +183,10 @@ export function CrtExhibit({ item, index }: { item: ShowcaseItem; index: number 
     }
     setFocused(visible);
   };
-  const handleBlur = () => setFocused(false);
+  const handleBlur = () => {
+    setFocused(false);
+    setOverride((o) => (o === false ? null : o));
+  };
 
   return (
     <figure ref={rootRef} className="w-full max-w-[420px]">
@@ -173,13 +195,13 @@ export function CrtExhibit({ item, index }: { item: ShowcaseItem; index: number 
           <button
             type="button"
             className={`${styles.crtScreen} ${styles.scanlines} ${styles.crtGlass} aspect-video`}
-            aria-pressed={pinned}
+            aria-pressed={playing}
             aria-label={`${playing ? 'Pause' : 'Play'} reel — ${item.title}`}
             onPointerEnter={handlePointerEnter}
             onPointerLeave={handlePointerLeave}
             onFocus={handleFocus}
             onBlur={handleBlur}
-            onClick={() => setPinned((p) => !p)}
+            onClick={() => setOverride(!playing)}
           >
             <Image
               src={item.coverImage}

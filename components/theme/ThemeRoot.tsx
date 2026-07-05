@@ -5,8 +5,9 @@ import dynamic from 'next/dynamic';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTheme } from './ThemeProvider';
 import { GlobalNav } from './GlobalNav';
+import { ThemeHint } from './ThemeHint';
 import PremiereTheme from '@/themes/premiere/PremiereTheme';
-import type { ThemeId } from '@/lib/themes';
+import { THEMES, type ThemeId } from '@/lib/themes';
 
 /** Branded fade shown while a heavy theme chunk streams in. */
 function ThemeLoading() {
@@ -16,8 +17,13 @@ function ThemeLoading() {
       role="status"
       aria-live="polite"
     >
-      <div className="flex flex-col items-center gap-3 text-theme-muted">
-        <span className="h-8 w-8 animate-spin rounded-full border-2 border-theme-border border-t-theme-accent motion-reduce:animate-none" />
+      <div className="flex flex-col items-center gap-4 text-theme-muted">
+        <span aria-hidden className="tk-loader">
+          <i />
+          <i />
+          <i />
+          <i />
+        </span>
         <span className="text-xs uppercase tracking-widest">Loading theme…</span>
       </div>
     </div>
@@ -46,7 +52,8 @@ const MuseumTheme = dynamic(() => import('@/themes/museum/MuseumTheme'), {
 });
 
 export default function ThemeRoot() {
-  const { effectiveTheme, hydrated, reducedMotion } = useTheme();
+  const { effectiveTheme, hydrated, reducedMotion, setTheme, isMobile, webglSupported } =
+    useTheme();
 
   // Release the pre-hydration no-flash guard (globals.css) only after the
   // stored/URL theme has actually been committed — this effect runs after the
@@ -54,6 +61,38 @@ export default function ThemeRoot() {
   useEffect(() => {
     if (hydrated) document.documentElement.setAttribute('data-stage-ready', 'true');
   }, [hydrated]);
+
+  // Phones render the Museum fallback for desktop-metaphor themes — start
+  // fetching its chunk as soon as we know, instead of on first paint of it.
+  useEffect(() => {
+    if (hydrated && isMobile) void import('@/themes/museum/MuseumTheme');
+  }, [hydrated, isMobile]);
+
+  // Global shortcuts: 1–5 switch themes (skipped while typing or with
+  // modifiers held; unavailable themes are ignored). Mirrored as kbd hints
+  // in the switcher menu.
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.tagName === 'SELECT' ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+      const index = Number(e.key) - 1;
+      if (!Number.isInteger(index) || index < 0 || index >= THEMES.length) return;
+      const meta = THEMES[index];
+      if (meta.requiresWebGL && !webglSupported) return;
+      setTheme(meta.id);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [setTheme, webglSupported]);
 
   // SSR and the first client render always show the default theme; the mount
   // effect in ThemeProvider then swaps to the stored/URL theme. The inline
@@ -64,6 +103,7 @@ export default function ThemeRoot() {
   return (
     <>
       <GlobalNav />
+      <ThemeHint />
       <main
         id="content"
         data-theme-stage

@@ -140,6 +140,55 @@ body {
   color: var(--fg);
   font-family: var(--font-sans);
   overflow: hidden; /* each theme manages its own scrolling inside the stage */
+  transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+/* The persistent nav morphs smoothly as the palette variables flip. */
+header[role='banner'],
+header[role='banner'] a,
+header[role='banner'] button {
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
+}
+
+/* Chunk-loading indicator: four editing-timeline bars pulsing in sequence. */
+.tk-loader {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 26px;
+}
+.tk-loader i {
+  width: 5px;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--accent);
+  transform-origin: bottom;
+  animation: tk-load 1s ease-in-out infinite;
+}
+.tk-loader i:nth-child(2) {
+  animation-delay: 0.12s;
+  background: var(--accent-2);
+}
+.tk-loader i:nth-child(3) {
+  animation-delay: 0.24s;
+}
+.tk-loader i:nth-child(4) {
+  animation-delay: 0.36s;
+  background: var(--accent-2);
+}
+@keyframes tk-load {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
 }
 
 /*
@@ -187,5 +236,15 @@ html[data-theme] [data-theme-stage] {
   }
   html[data-theme] [data-theme-stage] {
     transition: none;
+  }
+  body,
+  header[role='banner'],
+  header[role='banner'] a,
+  header[role='banner'] button {
+    transition: none;
+  }
+  .tk-loader i {
+    animation: none;
+    transform: scaleY(0.7);
   }
 }

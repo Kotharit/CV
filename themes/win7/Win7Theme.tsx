@@ -86,6 +86,27 @@ export default function Win7Theme() {
     [windows, topId, focus, minimize],
   );
 
+  // Closing a window unmounts the focused element — hand keyboard focus to
+  // the window that becomes top-most (or back to the desktop) so Esc and
+  // Tab keep working instead of falling to <body>.
+  const closeWindow = useCallback(
+    (id: WindowId) => {
+      const remaining = windows.filter((w) => w.id !== id && !w.minimized);
+      const nextTop = remaining.reduce<(typeof windows)[number] | null>(
+        (a, b) => (!a || b.z > a.z ? b : a),
+        null,
+      );
+      close(id);
+      requestAnimationFrame(() => {
+        const next = nextTop
+          ? document.getElementById(`win7-window-${nextTop.id}`)
+          : desktopRef.current?.querySelector<HTMLElement>('button, a');
+        next?.focus({ preventScroll: true });
+      });
+    },
+    [windows, close],
+  );
+
   return (
     <div className="flex h-full w-full flex-col">
       <div ref={desktopRef} className={styles.desktop}>
@@ -130,7 +151,7 @@ export default function Win7Theme() {
                 statusText={def.statusText}
                 desktopRef={desktopRef}
                 reducedMotion={reducedMotion}
-                onClose={() => close(win.id)}
+                onClose={() => closeWindow(win.id)}
                 onMinimize={() => minimize(win.id)}
                 onFocus={() => focus(win.id)}
               >

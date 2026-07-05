@@ -54,11 +54,11 @@ export default function ProjectPanel({ activeId, onSelect, className = '', style
 
       <div
         aria-hidden
-        className="grid flex-none grid-cols-[minmax(0,1fr)_58px_minmax(0,88px)] items-center gap-2 border-b border-[#2a2a2a] bg-[#232323] px-2 py-1 text-[9px] font-semibold uppercase tracking-wider text-theme-muted"
+        className={`${styles.assetHead} flex-none border-b border-[#2a2a2a] bg-[#232323] px-2 py-1 text-[9px] font-semibold uppercase tracking-wider text-theme-muted`}
       >
         <span className="pl-[18px]">Name</span>
         <span className="text-right">Duration</span>
-        <span>Info</span>
+        <span className={styles.assetInfo}>Info</span>
       </div>
 
       <nav
@@ -116,7 +116,11 @@ export default function ProjectPanel({ activeId, onSelect, className = '', style
                               ? framesToTimecode(asset.durationFrames)
                               : '—'}
                           </span>
-                          <span className="truncate text-[9px] text-theme-muted">{asset.meta}</span>
+                          <span
+                            className={`${styles.assetInfo} truncate text-[9px] text-theme-muted`}
+                          >
+                            {asset.meta}
+                          </span>
                         </button>
                       </li>
                     );

@@ -85,6 +85,10 @@ export function StartMenu({ orbRef, reducedMotion, onClose, onShutDown }: StartM
     };
     const onDocKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
+        // Esc inside a non-empty search field is the native "clear the
+        // query" gesture — let it clear instead of dismissing the menu.
+        const target = event.target as HTMLElement | null;
+        if (target instanceof HTMLInputElement && target.value) return;
         onClose();
         orbRef.current?.focus();
       }

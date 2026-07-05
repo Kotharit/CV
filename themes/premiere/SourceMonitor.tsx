@@ -12,7 +12,6 @@ import {
   useRef,
   type CSSProperties,
 } from 'react';
-import { motion } from 'framer-motion';
 import {
   ChevronLeft,
   ChevronRight,
@@ -21,7 +20,6 @@ import {
   SkipBack,
   SkipForward,
 } from 'lucide-react';
-import { useTheme } from '@/components/theme/ThemeProvider';
 import PanelChrome from './PanelChrome';
 import SourcePanels from './SourcePanels';
 import { framesToTimecode, getPanelMeta } from './assets';
@@ -44,8 +42,6 @@ export default function SourceMonitor({
   className = '',
   style,
 }: SourceMonitorProps) {
-  const { hydrated, reducedMotion } = useTheme();
-
   const meta = useMemo(() => getPanelMeta(activeId), [activeId]);
   const metaRef = useRef(meta);
   useEffect(() => {
@@ -57,8 +53,14 @@ export default function SourceMonitor({
   const knobRef = useRef<HTMLDivElement>(null);
   const currentTcRef = useRef<HTMLSpanElement>(null);
   const rafRef = useRef(0);
-  /** One-shot guard: programmatic scroll resets must not move the playhead. */
-  const suppressRef = useRef(false);
+  /**
+   * Suppression window: content swaps rewind the scroll container, and the
+   * browser may fire clamp-generated scroll events *before* our effect runs
+   * (layout clamps scrollTop synchronously on commit). Any scroll event
+   * inside this window updates the scrubber UI but must not drive the
+   * timeline playhead — the selection handler has already positioned it.
+   */
+  const suppressUntilRef = useRef(0);
 
   const handleScroll = useCallback(() => {
     if (rafRef.current) return;
@@ -76,24 +78,19 @@ export default function SourceMonitor({
           metaRef.current.inFrames + fraction * metaRef.current.durFrames,
         );
       }
-      if (suppressRef.current) {
-        suppressRef.current = false;
-        return;
-      }
+      if (performance.now() < suppressUntilRef.current) return;
       onScrollProgress(fraction);
     });
   }, [onScrollProgress]);
 
   useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
 
-  // New clip loaded: rewind the content area + scrubber without touching
-  // the timeline playhead (a clip click has already snapped it).
+  // New clip loaded: rewind the content area + scrubber without letting the
+  // reset (or the browser's own scrollTop clamping) move the playhead.
   useEffect(() => {
+    suppressUntilRef.current = performance.now() + 200;
     const el = scrollRef.current;
-    if (el && el.scrollTop > 0) {
-      suppressRef.current = true;
-      el.scrollTop = 0;
-    }
+    if (el && el.scrollTop > 0) el.scrollTop = 0;
     if (fillRef.current) fillRef.current.style.width = '0%';
     if (knobRef.current) knobRef.current.style.left = '0%';
     if (currentTcRef.current) {
@@ -135,14 +132,12 @@ export default function SourceMonitor({
         aria-label="Selected section content"
         className={`${styles.scrollArea} min-h-0 flex-1 overflow-y-auto overscroll-contain bg-[#191919]`}
       >
-        <motion.div
-          key={activeId}
-          initial={hydrated && !reducedMotion ? { opacity: 0, y: 8 } : false}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: reducedMotion ? 0 : 0.22, ease: 'easeOut' }}
-        >
-          <SourcePanels activeId={activeId} onOpenPanel={onOpenPanel} onCueReel={onCueReel} />
-        </motion.div>
+        {/*
+          No key-based remount here: all ~25 CV panels stay permanently
+          mounted (SEO + focus continuity); the reveal animation is a CSS
+          keyframe on each panel that restarts when its hidden attr flips.
+        */}
+        <SourcePanels activeId={activeId} onOpenPanel={onOpenPanel} onCueReel={onCueReel} />
       </div>
 
       {/* Scrubber + fake transport (decorative) */}
