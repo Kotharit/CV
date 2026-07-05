@@ -52,7 +52,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const setTheme = useCallback((next: ThemeId) => {
     setThemeState(next);
-    document.documentElement.dataset.theme = next;
     try {
       localStorage.setItem(THEME_STORAGE_KEY, next);
     } catch {
@@ -68,6 +67,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     () => resolveEffectiveTheme(theme, { isMobile, webglSupported }),
     [theme, isMobile, webglSupported],
   );
+
+  // The CSS palette (html[data-theme]) must track the theme actually being
+  // rendered — e.g. a phone routed from Premiere to the Museum fallback gets
+  // gallery-white walls, not the editor grays. The visitor's *chosen* theme
+  // still lives in localStorage + the URL param.
+  useEffect(() => {
+    if (!hydrated) return;
+    document.documentElement.dataset.theme = effectiveTheme;
+  }, [effectiveTheme, hydrated]);
 
   const value = useMemo(
     () => ({

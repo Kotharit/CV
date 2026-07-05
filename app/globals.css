@@ -9,6 +9,11 @@
  * ------------------------------------------------------------------------- */
 
 :root {
+  --accent-rgb: 245 166 35;
+  --accent-2-rgb: 63 138 224;
+  --fg-rgb: 212 212 212;
+  --bg-rgb: 19 19 19;
+
   --nav-h: 48px;
 
   --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
@@ -36,6 +41,11 @@
 }
 
 html[data-theme='win7'] {
+  --accent-rgb: 245 166 35;
+  --accent-2-rgb: 47 126 224;
+  --fg-rgb: 26 58 92;
+  --bg-rgb: 47 111 180;
+
   --bg: #2f6fb4; /* sky gradient painted by the theme itself */
   --panel: rgba(255, 255, 255, 0.72);
   --panel-2: rgba(255, 255, 255, 0.55);
@@ -53,6 +63,11 @@ html[data-theme='win7'] {
 }
 
 html[data-theme='space'] {
+  --accent-rgb: 138 180 255;
+  --accent-2-rgb: 199 146 234;
+  --fg-rgb: 219 228 255;
+  --bg-rgb: 5 7 15;
+
   --bg: #05070f;
   --panel: #0b1020;
   --panel-2: #101832;
@@ -70,6 +85,11 @@ html[data-theme='space'] {
 }
 
 html[data-theme='scroll3d'] {
+  --accent-rgb: 0 229 255;
+  --accent-2-rgb: 255 45 149;
+  --fg-rgb: 224 242 255;
+  --bg-rgb: 7 11 22;
+
   --bg: #070b16;
   --panel: #0d1426;
   --panel-2: #131d38;
@@ -87,6 +107,11 @@ html[data-theme='scroll3d'] {
 }
 
 html[data-theme='museum'] {
+  --accent-rgb: 140 111 63;
+  --accent-2-rgb: 64 83 138;
+  --fg-rgb: 33 29 22;
+  --bg-rgb: 245 242 236;
+
   --bg: #f5f2ec;
   --panel: #fffdf8;
   --panel-2: #efe9df;
@@ -125,7 +150,7 @@ body {
  * visitors see a brief branded fade instead of the wrong theme.
  * (This hides paint only; the HTML stays in the DOM for crawlers.)
  */
-html[data-theme]:not([data-theme='premiere']) [data-theme-stage] {
+html[data-theme]:not([data-theme='premiere']):not([data-stage-ready]) [data-theme-stage] {
   opacity: 0;
 }
 html[data-theme] [data-theme-stage] {

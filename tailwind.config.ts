@@ -16,13 +16,13 @@ const config: Config = {
     extend: {
       colors: {
         theme: {
-          bg: 'var(--bg)',
+          bg: 'rgb(var(--bg-rgb) / <alpha-value>)',
           panel: 'var(--panel)',
           border: 'var(--border)',
-          fg: 'var(--fg)',
+          fg: 'rgb(var(--fg-rgb) / <alpha-value>)',
           muted: 'var(--fg-muted)',
-          accent: 'var(--accent)',
-          accent2: 'var(--accent-2)',
+          accent: 'rgb(var(--accent-rgb) / <alpha-value>)',
+          accent2: 'rgb(var(--accent-2-rgb) / <alpha-value>)',
         },
       },
       fontFamily: {

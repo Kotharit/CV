@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTheme } from './ThemeProvider';
@@ -46,6 +47,13 @@ const MuseumTheme = dynamic(() => import('@/themes/museum/MuseumTheme'), {
 
 export default function ThemeRoot() {
   const { effectiveTheme, hydrated, reducedMotion } = useTheme();
+
+  // Release the pre-hydration no-flash guard (globals.css) only after the
+  // stored/URL theme has actually been committed — this effect runs after the
+  // render in which `hydrated` flipped, so the default theme never flashes.
+  useEffect(() => {
+    if (hydrated) document.documentElement.setAttribute('data-stage-ready', 'true');
+  }, [hydrated]);
 
   // SSR and the first client render always show the default theme; the mount
   // effect in ThemeProvider then swaps to the stored/URL theme. The inline

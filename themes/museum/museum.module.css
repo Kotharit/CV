@@ -1,0 +1,410 @@
+/* ==========================================================================
+   Museum theme — gallery chrome.
+   Warm gallery-white walls, brass details, wood frames, CRT bezels.
+   Palette vars come from html[data-theme='museum'] (app/globals.css).
+   ========================================================================== */
+
+/* ---- gallery shell ------------------------------------------------------ */
+
+.gallery {
+  scrollbar-width: thin;
+  scrollbar-color: #cbbfa8 transparent;
+}
+.gallery::-webkit-scrollbar {
+  height: 8px;
+}
+.gallery::-webkit-scrollbar-track {
+  background: transparent;
+}
+.gallery::-webkit-scrollbar-thumb {
+  background: #d0c4ac;
+  border-radius: 4px;
+}
+.gallery:focus-visible {
+  outline-offset: -3px;
+}
+
+.roomScroll {
+  scrollbar-width: thin;
+  scrollbar-color: #cbbfa8 transparent;
+}
+.roomScroll::-webkit-scrollbar {
+  width: 6px;
+}
+.roomScroll::-webkit-scrollbar-thumb {
+  background: #d0c4ac;
+  border-radius: 3px;
+}
+
+/* Warm wall wash + a hint of floor at the bottom of every room. */
+.room {
+  background:
+    linear-gradient(
+      0deg,
+      rgba(112, 90, 58, 0.12) 0%,
+      rgba(112, 90, 58, 0.05) 44px,
+      rgba(112, 90, 58, 0) 120px
+    ),
+    radial-gradient(110% 85% at 50% -8%, #fbf8f2 0%, rgba(251, 248, 242, 0) 62%),
+    var(--bg);
+}
+
+/* Screening room — darker wall wash. Re-declares the palette vars so every
+   Tailwind theme utility used inside automatically flips to the dark set. */
+.screeningRoom {
+  --fg-rgb: 236 227 208;
+  --fg: #ece3d0;
+  --fg-muted: #b3a586;
+  --panel: #221c12;
+  --panel-2: #2c2517;
+  --border: #423824;
+  --accent-rgb: 207 169 99;
+  --accent: #cfa963;
+  background:
+    radial-gradient(100% 90% at 50% 0%, #272014 0%, #17130c 58%, #0f0c07 100%);
+  color: #ece3d0;
+}
+
+/* ---- spotlight wash ------------------------------------------------------ */
+
+.spotlit {
+  position: relative;
+}
+.spotlit::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -14%;
+  width: 145%;
+  height: 135%;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    52% 58% at 50% 0%,
+    rgba(255, 250, 233, 0.95) 0%,
+    rgba(255, 250, 233, 0.4) 42%,
+    rgba(255, 250, 233, 0) 72%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+.spotlit > * {
+  position: relative;
+  z-index: 1;
+}
+/* In the dark room the spotlight is a dim tungsten cone instead. */
+.screeningRoom .spotlit::before {
+  background: radial-gradient(
+    52% 58% at 50% 0%,
+    rgba(255, 214, 140, 0.16) 0%,
+    rgba(255, 214, 140, 0.06) 45%,
+    rgba(255, 214, 140, 0) 72%
+  );
+}
+
+/* ---- micro-typography ---------------------------------------------------- */
+
+.catalogue {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.engraved {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--fg-muted);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.75);
+  letter-spacing: 0.02em;
+}
+.screeningRoom .engraved {
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
+}
+
+/* ---- wall text block ----------------------------------------------------- */
+
+.wallText {
+  border-left: 2px solid rgba(140, 111, 63, 0.45);
+  padding-left: 1.5rem;
+}
+
+/* ---- frames -------------------------------------------------------------- */
+
+/* Thin dark-wood frame with an inner brass mat line. */
+.frame {
+  position: relative;
+  margin: 8px;
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  background: var(--panel);
+  border: 1px solid #e9e1d1;
+  border-radius: 1px;
+  box-shadow:
+    0 0 0 1px #5a4730,
+    0 0 0 6px #2c2317,
+    0 0 0 7px #6d5839,
+    0 26px 42px -22px rgba(52, 40, 20, 0.5);
+}
+.frame::after {
+  content: '';
+  position: absolute;
+  inset: 9px;
+  border: 1px solid rgba(140, 111, 63, 0.35);
+  pointer-events: none;
+}
+
+/* Small framed plate (Property Wing). */
+.plate {
+  margin: 5px;
+  padding: 0.8rem 1.4rem;
+  background: var(--panel);
+  border: 1px solid #e6ddca;
+  border-radius: 1px;
+  box-shadow:
+    0 0 0 1px #6d5839,
+    0 0 0 4px #2c2317,
+    0 12px 20px -12px rgba(52, 40, 20, 0.45);
+}
+
+/* Framed diploma (The Study). */
+.diploma {
+  margin: 6px;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  text-align: center;
+  background: linear-gradient(180deg, #fffdf6 0%, #faf4e6 100%);
+  border: 1px solid #d9cdb2;
+  border-radius: 1px;
+  box-shadow:
+    0 0 0 4px #fffdf6,
+    0 0 0 5px #b0946a,
+    0 0 0 6px #7c6440,
+    0 22px 34px -20px rgba(52, 40, 20, 0.5);
+}
+
+.seal {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  margin: 0 auto;
+  position: relative;
+  background: radial-gradient(circle at 35% 28%, #dcc189 0%, #8c6f3f 62%, #675230 100%);
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 255, 255, 0.22),
+    inset 0 0 0 7px rgba(88, 68, 34, 0.35),
+    0 3px 7px rgba(52, 40, 20, 0.4);
+}
+.seal::after {
+  content: '';
+  position: absolute;
+  inset: 9px;
+  border-radius: 50%;
+  border: 1px dashed rgba(255, 250, 235, 0.55);
+}
+
+/* ---- museum label card ---------------------------------------------------- */
+
+.label {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  padding: 0.9rem 1.1rem;
+  box-shadow: 0 12px 22px -16px rgba(52, 40, 20, 0.5);
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.35rem 0.8rem;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--fg);
+  box-shadow: 0 2px 6px -4px rgba(52, 40, 20, 0.5);
+}
+
+/* ---- brass plaques (Exit contact links) ----------------------------------- */
+
+.plaque {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1.4rem;
+  background: linear-gradient(175deg, #dcc48e 0%, #bda069 46%, #a2854c 100%);
+  color: #35290f;
+  border: 1px solid #8a7040;
+  border-radius: 3px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -3px 6px rgba(70, 52, 18, 0.35),
+    0 3px 0 #776034,
+    0 14px 22px -13px rgba(52, 40, 20, 0.6);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.plaque:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -3px 6px rgba(70, 52, 18, 0.3),
+    0 5px 0 #776034,
+    0 18px 26px -13px rgba(52, 40, 20, 0.55);
+}
+@media (prefers-reduced-motion: reduce) {
+  .plaque {
+    transition: none;
+  }
+  .plaque:hover {
+    transform: none;
+  }
+}
+
+/* ---- gallery controls ----------------------------------------------------- */
+
+.controlBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--panel);
+  border: 1px solid #c4b493;
+  color: var(--accent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 10px 18px -10px rgba(52, 40, 20, 0.55);
+  transition: transform 0.12s ease, border-color 0.12s ease;
+}
+.controlBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+.controlBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+@media (prefers-reduced-motion: reduce) {
+  .controlBtn {
+    transition: none;
+  }
+  .controlBtn:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+.placard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  background: rgba(255, 253, 248, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  box-shadow: 0 12px 22px -16px rgba(52, 40, 20, 0.55);
+  backdrop-filter: blur(6px);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid #a08a5e;
+  background: transparent;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.dot:hover {
+  transform: scale(1.25);
+}
+.dotActive {
+  background: var(--accent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .dot {
+    transition: none;
+  }
+  .dot:hover {
+    transform: none;
+  }
+}
+
+/* ---- CRT / arcade monitor -------------------------------------------------- */
+
+.crtShell {
+  position: relative;
+  padding: 14px 14px 10px;
+  border-radius: 16px 16px 20px 20px;
+  background: linear-gradient(165deg, #47433a 0%, #2b2822 48%, #1a1815 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.5),
+    0 28px 46px -22px rgba(8, 6, 2, 0.8);
+}
+
+.crtScreen {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 10px / 13px;
+  background: #070605;
+  box-shadow:
+    inset 0 0 0 2px #000,
+    inset 0 0 34px rgba(0, 0, 0, 0.85);
+}
+
+/* Scanlines + tube vignette, above the picture, below nothing interactive. */
+.scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.26) 0px,
+      rgba(0, 0, 0, 0.26) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    radial-gradient(115% 115% at 50% 45%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+/* Glass specular highlight. */
+.crtGlass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.13) 0%,
+    rgba(255, 255, 255, 0.04) 22%,
+    rgba(255, 255, 255, 0) 42%
+  );
+}
+
+.led {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #6f5b2c;
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.6);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+.ledOn {
+  background: #86e97f;
+  box-shadow: 0 0 8px 1px rgba(120, 235, 110, 0.8);
+}
+@media (prefers-reduced-motion: reduce) {
+  .led {
+    transition: none;
+  }
+}

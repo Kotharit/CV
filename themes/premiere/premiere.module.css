@@ -1,0 +1,457 @@
+/* ---------------------------------------------------------------------------
+   Premiere theme — workspace chrome.
+   Pixel-specific colors live here on purpose (this file IS the theme skin);
+   typography + shared tones come from the theme CSS variables.
+--------------------------------------------------------------------------- */
+
+.workspace {
+  display: grid;
+  grid-template-columns: 26fr 40fr 34fr;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 34%);
+  gap: 3px;
+  padding: 3px;
+  flex: 1 1 auto;
+  min-height: 0;
+  background: #0c0c0c;
+}
+
+.projectPanel {
+  grid-column: 1;
+  grid-row: 1;
+}
+.sourcePanel {
+  grid-column: 2;
+  grid-row: 1;
+}
+.programPanel {
+  grid-column: 3;
+  grid-row: 1;
+}
+.timelinePanel {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+/* Safety degradation only — the shell reroutes phones to the Museum theme. */
+@media (max-width: 767px) {
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-auto-rows: auto;
+    overflow-y: auto;
+  }
+  .projectPanel,
+  .sourcePanel,
+  .programPanel,
+  .timelinePanel {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .projectPanel {
+    height: 300px;
+  }
+  .sourcePanel {
+    height: 440px;
+  }
+  .programPanel {
+    height: 360px;
+  }
+  .timelinePanel {
+    height: 300px;
+  }
+}
+
+/* Panel shell -------------------------------------------------------------- */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  background: #1e1e1e;
+  transition: border-color 0.15s ease;
+}
+.panel:focus-within {
+  border-color: #3f8ae0;
+}
+
+/* Mount entrance — CSS (not JS) so it also plays for no-JS visitors. */
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.enter {
+  animation: panelIn 0.4s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation-delay: var(--enter-delay, 0ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .enter {
+    animation: none;
+  }
+}
+
+/* Dense pro scrollbars ------------------------------------------------------ */
+
+.scrollArea {
+  scrollbar-width: thin;
+  scrollbar-color: #454545 #191919;
+}
+.scrollArea::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.scrollArea::-webkit-scrollbar-track {
+  background: #191919;
+}
+.scrollArea::-webkit-scrollbar-thumb {
+  background: #3f3f3f;
+  border: 2px solid #191919;
+  border-radius: 6px;
+}
+.scrollArea::-webkit-scrollbar-thumb:hover {
+  background: #4d4d4d;
+}
+
+/* Project panel rows -------------------------------------------------------- */
+
+.binRow {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+}
+.binRow:hover {
+  background: #262626;
+}
+
+.assetRow {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 58px minmax(0, 88px);
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 3px 8px 3px 26px;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+}
+.assetRow:hover {
+  background: #262626;
+}
+.assetSelected,
+.assetSelected:hover {
+  background: rgba(63, 138, 224, 0.24);
+}
+.assetSelected::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #3f8ae0;
+}
+
+/* Source monitor scrubber ---------------------------------------------------- */
+
+.scrubber {
+  position: relative;
+  height: 6px;
+  border-radius: 3px;
+  border: 1px solid #2e2e2e;
+  background: #101010;
+}
+.scrubberFill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #2f6cb4, #3f8ae0);
+}
+.scrubberKnob {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  width: 9px;
+  height: 11px;
+  margin: -6px 0 0 -4px;
+  border: 1px solid #050505;
+  border-radius: 2px;
+  background: #cfcfcf;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* Program monitor ------------------------------------------------------------ */
+
+.monitorArea {
+  container-type: size;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  flex: 1;
+  padding: 10px;
+  background: #0d0d0d;
+}
+.monitorFit {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+@supports (width: 1cqh) {
+  .monitorFit {
+    width: min(100%, calc(100cqh * 16 / 9));
+  }
+}
+
+.safeMargins {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+.safeOuter {
+  position: absolute;
+  inset: 4%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+.safeInner {
+  position: absolute;
+  inset: 11%;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.recDot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f5a623;
+  box-shadow: 0 0 6px rgba(245, 166, 35, 0.8);
+  animation: recPulse 1.6s ease-in-out infinite;
+}
+@keyframes recPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .recDot {
+    animation: none;
+  }
+}
+
+/* Timeline ------------------------------------------------------------------- */
+
+.ruler {
+  position: relative;
+  height: 28px;
+  flex: none;
+  border-bottom: 1px solid #0e0e0e;
+  background: #1a1a1a;
+  cursor: ew-resize;
+  touch-action: none;
+  user-select: none;
+}
+/* Quarter-year subticks along the bottom edge. */
+.ruler::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5px;
+  background: repeating-linear-gradient(90deg, #454545 0 1px, transparent 1px calc(100% / 22));
+  pointer-events: none;
+}
+
+.lanes {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+/* Faint year gridlines through the track lanes. */
+.lanes::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.045) 0 1px,
+    transparent 1px calc(100% / 5.5)
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.laneVideo {
+  background: #202020;
+}
+.laneAudio {
+  background: #1d221e;
+}
+
+.clip {
+  position: absolute;
+  top: 3px;
+  bottom: 4px;
+  z-index: 2;
+  min-width: 16px;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.55);
+  border-radius: 3px;
+  background-color: var(--clip-c, #38598a);
+  text-align: left;
+  cursor: pointer;
+  transition: filter 0.12s ease;
+}
+.clip:hover {
+  filter: brightness(1.16);
+}
+.clipSelected,
+.clipSelected:hover {
+  border-color: #3f8ae0;
+  box-shadow:
+    inset 0 0 0 1.5px #3f8ae0,
+    0 0 6px rgba(63, 138, 224, 0.45);
+  filter: brightness(1.1);
+}
+
+.clipName {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 13px;
+  padding: 0 4px;
+  background: rgba(0, 0, 0, 0.34);
+  color: #ececec;
+  font-size: 9px;
+  line-height: 13px;
+  white-space: nowrap;
+}
+.clipName > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.clipFx {
+  flex: none;
+  margin-left: auto;
+  width: 13px;
+  height: 9px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #ffd27a;
+  font-size: 7px;
+  font-style: italic;
+  line-height: 9px;
+  text-align: center;
+}
+
+/* Fake frame-thumbnail stripe on video clips. */
+.clipVideo::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 13px;
+  bottom: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.09) 0 2px, transparent 2px 16px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.13), rgba(0, 0, 0, 0.28));
+}
+
+.clipPeriod {
+  position: absolute;
+  left: 4px;
+  bottom: 2px;
+  z-index: 2;
+  pointer-events: none;
+  color: rgba(255, 255, 255, 0.78);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+}
+
+.wave {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 13px;
+  width: 100%;
+  height: calc(100% - 13px);
+}
+
+/* Playhead ------------------------------------------------------------------- */
+
+.playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+.playhead::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -0.5px;
+  width: 1px;
+  background: #e8483f;
+  box-shadow: 0 0 4px rgba(232, 72, 63, 0.7);
+}
+
+.playheadHandle {
+  position: absolute;
+  top: 0;
+  left: -9px;
+  width: 18px;
+  height: 19px;
+  background: transparent;
+  pointer-events: auto;
+  cursor: ew-resize;
+  touch-action: none;
+}
+.playheadHandle::before {
+  content: '';
+  position: absolute;
+  inset: 2px 3px 3px 3px;
+  background: #f5a623;
+  border-radius: 1px;
+  clip-path: polygon(0 0, 100% 0, 100% 55%, 50% 100%, 0 55%);
+  box-shadow: 0 0 4px rgba(245, 166, 35, 0.5);
+}

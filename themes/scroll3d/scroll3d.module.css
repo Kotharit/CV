@@ -1,0 +1,362 @@
+/* ---------------------------------------------------------------------------
+ * Scroll3D — neon tunnel chrome.
+ * Palette mirrors html[data-theme='scroll3d'] in app/globals.css:
+ * bg #070b16 · cyan #00e5ff · magenta #ff2d95
+ * ------------------------------------------------------------------------- */
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-shadow: 0 0 14px rgba(0, 229, 255, 0.45);
+}
+
+.neonTitle {
+  background: linear-gradient(
+    100deg,
+    #eaf7ff 5%,
+    #7df3ff 38%,
+    var(--accent) 55%,
+    var(--accent-2) 95%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 24px rgba(0, 229, 255, 0.3));
+}
+
+.panel {
+  background: rgba(13, 20, 38, 0.78);
+  border: 1px solid rgba(0, 229, 255, 0.16);
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 30px 80px -40px rgba(0, 0, 0, 0.85),
+    0 0 50px -22px rgba(0, 229, 255, 0.4),
+    inset 0 1px 0 rgba(224, 242, 255, 0.06);
+}
+
+/* Safety valve: on short viewports a station may exceed the stage height —
+ * the shell wrapper scrolls internally instead of clipping content. */
+.clamp {
+  max-height: 100%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 229, 255, 0.35) transparent;
+}
+.clamp::-webkit-scrollbar {
+  width: 6px;
+}
+.clamp::-webkit-scrollbar-thumb {
+  background: rgba(0, 229, 255, 0.3);
+  border-radius: 3px;
+}
+.clamp::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Applied to drei's ScrollControls scroller element via classList. */
+.scroller {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 229, 255, 0.35) transparent;
+}
+.scroller::-webkit-scrollbar {
+  width: 8px;
+}
+.scroller::-webkit-scrollbar-thumb {
+  background: rgba(0, 229, 255, 0.28);
+  border-radius: 4px;
+}
+.scroller::-webkit-scrollbar-track {
+  background: rgba(7, 11, 22, 0.6);
+}
+
+.titleChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  background: rgba(0, 229, 255, 0.07);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  box-shadow: 0 0 20px -8px rgba(0, 229, 255, 0.6);
+}
+.titleChipAlt {
+  border-color: rgba(255, 45, 149, 0.4);
+  background: rgba(255, 45, 149, 0.07);
+  color: var(--accent-2);
+  box-shadow: 0 0 20px -8px rgba(255, 45, 149, 0.6);
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: rgba(19, 29, 56, 0.6);
+  color: var(--fg);
+  white-space: nowrap;
+}
+
+.propChip {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  background: linear-gradient(120deg, rgba(0, 229, 255, 0.1), rgba(255, 45, 149, 0.08));
+  color: var(--fg);
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 0 16px -7px rgba(0, 229, 255, 0.5);
+}
+
+@keyframes s3dFloat {
+  from {
+    transform: translateY(-3px);
+  }
+  to {
+    transform: translateY(3px);
+  }
+}
+.propChipFloat {
+  animation: s3dFloat 3.6s ease-in-out infinite alternate;
+}
+
+.card {
+  background: rgba(19, 29, 56, 0.55);
+  border: 1px solid rgba(33, 49, 92, 0.9);
+  border-radius: 14px;
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  background: rgba(255, 45, 149, 0.1);
+  border: 1px solid rgba(255, 45, 149, 0.45);
+  border-radius: 999px;
+  padding: 5px 12px;
+  box-shadow: 0 0 18px -8px rgba(255, 45, 149, 0.7);
+}
+
+/* Phase strip: Discovery → Build → Launch → Iterate */
+.phaseStrip {
+  position: relative;
+  display: flex;
+  margin: 1.4rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.phaseStrip::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 12%;
+  right: 12%;
+  height: 2px;
+  border-radius: 1px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  opacity: 0.55;
+}
+.phase {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-top: 22px;
+}
+.phaseDot {
+  position: absolute;
+  top: 0;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--panel);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.6);
+}
+.phase:nth-child(n + 3) .phaseDot {
+  border-color: var(--accent-2);
+  box-shadow: 0 0 12px rgba(255, 45, 149, 0.6);
+}
+
+/* Contact links */
+.contactLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  background: rgba(13, 20, 38, 0.8);
+  color: var(--fg);
+  font-size: 14px;
+  font-weight: 600;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.contactLink:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  box-shadow: 0 0 26px -8px rgba(0, 229, 255, 0.65);
+}
+
+/* HUD progress rail */
+.rail {
+  position: relative;
+  height: 15.5rem;
+  width: 16px;
+  display: flex;
+  justify-content: center;
+}
+.railTrack {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: calc(50% - 1px);
+  width: 2px;
+  border-radius: 1px;
+  background: rgba(126, 148, 196, 0.25);
+}
+.railFill {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: calc(50% - 1px);
+  width: 2px;
+  border-radius: 1px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.8);
+  transform: scaleY(0);
+  transform-origin: top;
+}
+.dotList {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.dot {
+  position: relative;
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 229, 255, 0.5);
+  background: rgba(7, 11, 22, 0.85);
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+.dot:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+}
+.dotActive {
+  background: var(--accent);
+  border-color: transparent;
+  box-shadow: 0 0 14px rgba(0, 229, 255, 0.9);
+  transform: scale(1.2);
+}
+.dotLabel {
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%) translateX(4px);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg);
+  background: rgba(13, 20, 38, 0.92);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  padding: 4px 9px;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+.dot:hover .dotLabel,
+.dot:focus-visible .dotLabel {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Overlays above the canvas */
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 90% at 50% 45%,
+    transparent 55%,
+    rgba(3, 5, 12, 0.55) 100%
+  );
+}
+.scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.45;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(224, 242, 255, 0.026) 0 1px,
+    transparent 1px 3px
+  );
+}
+
+/* Reduced-motion flat fallback backdrop: static grid + glow, zero animation. */
+.flatBg {
+  background-image:
+    linear-gradient(rgba(0, 229, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 255, 0.045) 1px, transparent 1px),
+    radial-gradient(80% 55% at 50% 0%, rgba(0, 229, 255, 0.09), transparent 60%),
+    radial-gradient(70% 50% at 50% 100%, rgba(255, 45, 149, 0.08), transparent 60%);
+  background-size:
+    44px 44px,
+    44px 44px,
+    auto,
+    auto;
+  background-color: #070b16;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .propChipFloat {
+    animation: none;
+  }
+  .dot,
+  .dotLabel,
+  .contactLink {
+    transition: none;
+  }
+  .contactLink:hover {
+    transform: none;
+  }
+}
