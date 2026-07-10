@@ -6,10 +6,10 @@
 import { type CSSProperties, type KeyboardEvent } from 'react';
 import { motion } from 'framer-motion';
 import { SkipBack, SkipForward } from 'lucide-react';
-import { profile } from '@/data/profile';
 import { useTheme } from '@/components/theme/ThemeProvider';
 import { VideoEmbed } from '@/components/shared/VideoEmbed';
 import PanelChrome from './PanelChrome';
+import { PROGRAM_REELS } from './assets';
 import styles from './premiere.module.css';
 
 interface ProgramMonitorProps {
@@ -27,8 +27,30 @@ export default function ProgramMonitor({
 }: ProgramMonitorProps) {
   const { hydrated, reducedMotion } = useTheme();
 
-  const reels = profile.showcase;
+  // Showcase reels + every pasted section video (see assets.ts).
+  const reels = PROGRAM_REELS;
   const count = reels.length;
+
+  // Owner-editable pool — guard total emptiness (avoids modulo-by-zero).
+  if (count === 0) {
+    return (
+      <section
+        aria-label="Program monitor — showcase screening room"
+        className={`${styles.panel} ${className}`}
+        style={style}
+      >
+        <PanelChrome title="Program Monitor" />
+        <div className={styles.monitorArea}>
+          <p className="m-auto max-w-xs px-6 text-center text-xs leading-relaxed text-theme-muted">
+            Nothing cued — add showcase reels or paste links into{' '}
+            <code className="font-mono">sectionVideos</code> in{' '}
+            <code className="font-mono">data/profile.ts</code>.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
   const index = ((reelIndex % count) + count) % count;
   const reel = reels[index];
 
@@ -69,7 +91,7 @@ export default function ProgramMonitor({
           animate={{ opacity: 1 }}
           transition={{ duration: reducedMotion ? 0 : 0.25, ease: 'easeOut' }}
         >
-          <VideoEmbed video={reel.video} title={reel.title} cover={reel.coverImage} />
+          <VideoEmbed video={reel.video} title={reel.title} cover={reel.cover} />
           <div aria-hidden className={styles.safeMargins}>
             <span className={styles.safeOuter} />
             <span className={styles.safeInner} />
@@ -100,7 +122,7 @@ export default function ProgramMonitor({
         <div className="min-w-0 flex-1 text-center" aria-live="polite">
           <p className="truncate text-[12px] font-medium text-theme-fg">{reel.title}</p>
           <p className="truncate font-mono text-[9px] uppercase tracking-wider text-theme-muted">
-            {reel.role} · {String(index + 1).padStart(2, '0')} /{' '}
+            {reel.subtitle} · {String(index + 1).padStart(2, '0')} /{' '}
             {String(count).padStart(2, '0')}
           </p>
         </div>

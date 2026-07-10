@@ -8,6 +8,7 @@ import {
   type ExpertiseKey,
 } from '@/data/profile';
 import { useTheme } from '@/components/theme/ThemeProvider';
+import { VideoShelf } from '@/components/shared/VideoShelf';
 import { CrtExhibit } from './CrtExhibit';
 import { MuseumLabel, Rise, RoomHeading } from './Exhibit';
 import styles from './museum.module.css';
@@ -48,6 +49,7 @@ function EntranceRoom() {
               {para}
             </p>
           ))}
+          <VideoShelf section="about" compact className="mt-7" />
         </aside>
       </Rise>
     </div>
@@ -97,6 +99,9 @@ function CareerHall() {
           <CareerCanvas key={exp.title} exp={exp} index={i} />
         ))}
       </div>
+      <Rise delay={0.2} className="mt-12">
+        <VideoShelf section="experience" className="max-w-xl" />
+      </Rise>
     </>
   );
 }
@@ -205,6 +210,9 @@ function StudyRoom() {
           />
         ))}
       </div>
+      <Rise delay={0.2} className="mt-12">
+        <VideoShelf section="education" className="max-w-xl" />
+      </Rise>
     </>
   );
 }
@@ -262,6 +270,14 @@ function ExpertiseWall() {
             </Rise>
           );
         })}
+      </div>
+      <div className="mt-12 grid gap-10 md:grid-cols-2 md:gap-12">
+        <Rise delay={0.15}>
+          <VideoShelf section="expertise" />
+        </Rise>
+        <Rise delay={0.22}>
+          <VideoShelf section="marketing" />
+        </Rise>
       </div>
     </>
   );

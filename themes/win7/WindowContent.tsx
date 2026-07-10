@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { EXPERTISE_LABELS, profile, type ExpertiseKey } from '@/data/profile';
 import { VideoEmbed } from '@/components/shared/VideoEmbed';
+import { VideoShelf } from '@/components/shared/VideoShelf';
 import type { WindowId } from './useWindowManager';
 import styles from './win7.module.css';
 
@@ -90,6 +91,8 @@ function AboutContent() {
           ))}
         </div>
       </section>
+
+      <VideoShelf section="about" compact className={styles.contentSection} />
     </div>
   );
 }
@@ -130,6 +133,8 @@ function EducationContent() {
           </article>
         ))}
       </section>
+
+      <VideoShelf section="education" compact className={styles.contentSection} />
     </div>
   );
 }
@@ -157,6 +162,8 @@ function WorkContent() {
           </ul>
         </article>
       ))}
+
+      <VideoShelf section="experience" compact className={styles.contentSection} />
     </div>
   );
 }
@@ -198,23 +205,28 @@ const EXPERTISE_ICONS: Record<ExpertiseKey, LucideIcon> = {
 function ExpertiseContent() {
   const keys = Object.keys(EXPERTISE_LABELS) as ExpertiseKey[];
   return (
-    <div className={styles.expGrid}>
-      {keys.map((key) => {
-        const Icon = EXPERTISE_ICONS[key];
-        return (
-          <section key={key} className={styles.itemCard} aria-label={EXPERTISE_LABELS[key]}>
-            <h2 className={styles.groupHeader}>
-              <Icon size={13} aria-hidden />
-              {EXPERTISE_LABELS[key]}
-            </h2>
-            <ul className={styles.skillList}>
-              {profile.expertise[key].map((skill) => (
-                <li key={skill}>{skill}</li>
-              ))}
-            </ul>
-          </section>
-        );
-      })}
+    <div>
+      <div className={styles.expGrid}>
+        {keys.map((key) => {
+          const Icon = EXPERTISE_ICONS[key];
+          return (
+            <section key={key} className={styles.itemCard} aria-label={EXPERTISE_LABELS[key]}>
+              <h2 className={styles.groupHeader}>
+                <Icon size={13} aria-hidden />
+                {EXPERTISE_LABELS[key]}
+              </h2>
+              <ul className={styles.skillList}>
+                {profile.expertise[key].map((skill) => (
+                  <li key={skill}>{skill}</li>
+                ))}
+              </ul>
+            </section>
+          );
+        })}
+      </div>
+
+      <VideoShelf section="expertise" compact className={styles.contentSection} />
+      <VideoShelf section="marketing" compact className={styles.contentSection} />
     </div>
   );
 }

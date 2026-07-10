@@ -14,6 +14,7 @@ import {
   type ExpertiseKey,
 } from '@/data/profile';
 import { framesToTimecode, getPanelMeta, milestonePanelId } from './assets';
+import { VideoShelf } from '@/components/shared/VideoShelf';
 import styles from './premiere.module.css';
 
 interface SourcePanelsProps {
@@ -214,6 +215,7 @@ export default function SourcePanels({ activeId, onOpenPanel, onCueReel }: Sourc
             </a>
           </li>
         </ul>
+        <VideoShelf section="about" compact className="mt-6" />
         <InOutRow panelId="about" />
       </Panel>
 
@@ -246,6 +248,7 @@ export default function SourcePanels({ activeId, onOpenPanel, onCueReel }: Sourc
             </li>
           ))}
         </ul>
+        <VideoShelf section="education" compact className="mt-6" />
         <InOutRow panelId="education" />
       </Panel>
 
@@ -296,6 +299,7 @@ export default function SourcePanels({ activeId, onOpenPanel, onCueReel }: Sourc
             </li>
           ))}
         </ul>
+        <VideoShelf section="experience" compact className="mt-6" />
         <InOutRow panelId="experience" />
       </Panel>
 
@@ -328,6 +332,8 @@ export default function SourcePanels({ activeId, onOpenPanel, onCueReel }: Sourc
             <ChipList items={profile.expertise[key]} />
           </div>
         ))}
+        <VideoShelf section="expertise" compact className="mt-6" />
+        <VideoShelf section="marketing" compact className="mt-5" />
         <InOutRow panelId="expertise" />
       </Panel>
 

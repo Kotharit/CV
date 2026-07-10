@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { VideoEmbed } from '@/components/shared/VideoEmbed';
+import { VideoShelf } from '@/components/shared/VideoShelf';
 import type { ModalSection, SpaceNode } from './constellations';
 
 interface NodeModalProps {
@@ -241,6 +242,7 @@ export default function NodeModal({ node, reducedMotion, onClose }: NodeModalPro
             {node.sections.map((section) => (
               <Section key={section.heading} section={section} />
             ))}
+            {node.videos && <VideoShelf section={node.videos} />}
           </div>
         </div>
       </motion.div>

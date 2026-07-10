@@ -6,13 +6,49 @@
 
 import {
   EXPERTISE_LABELS,
+  SECTION_VIDEO_LABELS,
   TRACK_LABELS,
+  parseVideoLink,
   profile,
+  sectionVideos,
   type ExpertiseKey,
   type Profile,
+  type SectionVideoKey,
+  type VideoSource,
 } from '@/data/profile';
 
 export type MilestoneEntry = Profile['milestones'][number];
+
+/** One entry in the Program Monitor's screening pool. */
+export interface ProgramReel {
+  title: string;
+  subtitle: string;
+  video: VideoSource;
+  cover?: string;
+}
+
+/**
+ * Program Monitor pool: the showcase reels FIRST (their indices must stay
+ * 0..n-1 — bin assets and "Cue in Program Monitor" buttons cue by showcase
+ * index), then every pasted section video from data/profile.ts. Unfilled
+ * lines surface as placeholder slots so the monitor mirrors what the CV
+ * sections show.
+ */
+export const PROGRAM_REELS: readonly ProgramReel[] = [
+  ...profile.showcase.map((reel) => ({
+    title: reel.title,
+    subtitle: reel.role,
+    video: reel.video,
+    cover: reel.coverImage,
+  })),
+  ...(Object.keys(sectionVideos) as SectionVideoKey[]).flatMap((key) =>
+    sectionVideos[key].map((link, i) => ({
+      title: `${SECTION_VIDEO_LABELS[key]} — Linked clip ${String(i + 1).padStart(2, '0')}`,
+      subtitle: 'Linked footage',
+      video: parseVideoLink(link) ?? ({ kind: 'youtube', id: 'PLACEHOLDER_ID' } as const),
+    })),
+  ),
+];
 
 export const FPS = 24;
 

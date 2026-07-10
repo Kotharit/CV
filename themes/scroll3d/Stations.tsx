@@ -33,6 +33,7 @@ import {
   profile,
   type Milestone,
 } from '@/data/profile';
+import { VideoShelf } from '@/components/shared/VideoShelf';
 import { VideoEmbed } from '@/components/shared/VideoEmbed';
 import styles from './scroll3d.module.css';
 
@@ -202,6 +203,8 @@ function PortalStation(_: StationContentProps) {
       <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.2em] text-theme-muted">
         Placeholder phase breakdown of the 24-month arc
       </p>
+
+      <VideoShelf section="experience" compact className="mt-6 text-left" />
     </div>
   );
 }
@@ -273,6 +276,8 @@ function MarketingStation(_: StationContentProps) {
       </div>
 
       <TagRow label={EXPERTISE_LABELS.marketing} tags={profile.expertise.marketing} />
+
+      <VideoShelf section="marketing" compact className="mt-6" />
     </div>
   );
 }
@@ -326,6 +331,8 @@ function EducationStation(_: StationContentProps) {
           </article>
         ))}
       </div>
+
+      <VideoShelf section="education" compact className="mt-6" />
     </div>
   );
 }

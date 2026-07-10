@@ -279,6 +279,94 @@ export const profile = {
   ] satisfies Milestone[],
 } as const;
 
+// ============================================================================
+// SECTION VIDEOS — paste your YouTube links below, one per line. That's it.
+//
+// Every CV section across ALL themes renders these through the shared
+// <VideoShelf> component (components/shared/VideoShelf.tsx), and the
+// Premiere theme's Program Monitor cycles through them after the showcase
+// reels. Add as many links per section as you want — the shelf becomes a
+// scrollable list automatically.
+//
+// Accepted link forms (anything YouTube-shaped works):
+//   https://www.youtube.com/watch?v=dQw4w9WgXcQ
+//   https://youtu.be/dQw4w9WgXcQ
+//   https://www.youtube.com/shorts/dQw4w9WgXcQ
+//   dQw4w9WgXcQ                          (bare 11-char video id)
+//   https://vimeo.com/76979871           (Vimeo works too)
+//   /reels/my-clip.mp4                   (local/remote mp4 file)
+//
+// Lines containing "PLACEHOLDER" render as an intentional "paste a link
+// here" slot instead of a broken player.
+// ============================================================================
+
+export type SectionVideoKey =
+  | 'about'
+  | 'education'
+  | 'experience'
+  | 'expertise'
+  | 'marketing';
+
+export const SECTION_VIDEO_LABELS: Record<SectionVideoKey, string> = {
+  about: 'About',
+  education: 'Education',
+  experience: 'Work Experience',
+  expertise: 'Core Expertise',
+  marketing: 'Marketing',
+};
+
+export const sectionVideos: Record<SectionVideoKey, readonly string[]> = {
+  about: [
+    'PLACEHOLDER_YOUTUBE_LINK', // ← replace with e.g. https://youtu.be/XXXXXXXXXXX
+    'PLACEHOLDER_YOUTUBE_LINK',
+  ],
+  education: [
+    'PLACEHOLDER_YOUTUBE_LINK',
+  ],
+  experience: [
+    'PLACEHOLDER_YOUTUBE_LINK',
+    'PLACEHOLDER_YOUTUBE_LINK',
+  ],
+  expertise: [
+    'PLACEHOLDER_YOUTUBE_LINK',
+  ],
+  marketing: [
+    'PLACEHOLDER_YOUTUBE_LINK',
+  ],
+};
+
+/** True for seeded "paste a link here" lines in sectionVideos. */
+export function isPlaceholderLink(link: string): boolean {
+  return link.trim() === '' || link.includes('PLACEHOLDER');
+}
+
+/**
+ * Turn a pasted link (any common YouTube/Vimeo URL form, a bare YouTube id,
+ * or an mp4 path) into a playable VideoSource. Returns null when the line
+ * isn't recognizable — the UI then shows a "couldn't read this link" slot
+ * instead of a broken embed.
+ */
+export function parseVideoLink(link: string): VideoSource | null {
+  const trimmed = link.trim();
+  if (!trimmed || isPlaceholderLink(trimmed)) return null;
+
+  if (/^[A-Za-z0-9_-]{11}$/.test(trimmed)) {
+    return { kind: 'youtube', id: trimmed };
+  }
+  const youtube = trimmed.match(
+    /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/,
+  );
+  if (youtube) return { kind: 'youtube', id: youtube[1] };
+
+  const vimeo = trimmed.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vimeo) return { kind: 'vimeo', id: vimeo[1] };
+
+  if (trimmed.startsWith('/') || /\.(mp4|webm|mov)(\?|#|$)/i.test(trimmed)) {
+    return { kind: 'mp4', url: trimmed };
+  }
+  return null;
+}
+
 export type Profile = typeof profile;
 export type ExperienceItem = Profile['experience'][number];
 export type EducationItem = Profile['education'][number];

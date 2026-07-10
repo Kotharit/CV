@@ -44,6 +44,9 @@ Typecheck only: `npm run typecheck`.
 
 ## Architecture
 
+> Full per-file source map, contracts and how-to guides (written for both
+> developers and AI coding agents): **[ARCHITECTURE.md](ARCHITECTURE.md)**.
+
 ```
 app/
   layout.tsx            metadata, OG/Twitter tags, JSON-LD ProfilePage, no-flash theme script
@@ -56,6 +59,7 @@ components/
   theme/ThemeRoot       hard conditional mounting + code-split dynamic imports + fade
   theme/GlobalNav       persistent switcher · résumé download · contact (every theme)
   shared/VideoEmbed     renders any VideoSource (youtube/vimeo iframe, mp4 <video>)
+  shared/VideoShelf     scrollable "Linked footage" list fed by sectionVideos
 data/profile.ts         ⚠️ single source of truth — all seeded placeholder content
 lib/themes.ts           theme registry + effective-theme resolution (mobile/WebGL rules)
 lib/hooks.ts            media-query hooks + WebGL detection
@@ -103,6 +107,11 @@ public/
 
 1. **`data/profile.ts`** — replace every `PLACEHOLDER` string, metric, date and link.
    The top-of-file banner lists what to check. All five themes update automatically.
+   - **Section videos:** paste YouTube links (any URL form), Vimeo links, or mp4
+     paths into `sectionVideos.{about|education|experience|expertise|marketing}` —
+     one per line, as many as you like. They play in every theme's "Linked
+     footage" shelf (lists scroll automatically) and cycle in the Premiere
+     Program Monitor after the showcase reels.
 2. **Résumé** — drop the real PDF at `public/taha-kothari-resume.pdf` (or change
    `identity.resumePdf`).
 3. **Reels** — swap the `showcase[].video` sources: real YouTube/Vimeo ids or mp4 URLs.

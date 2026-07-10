@@ -13,6 +13,7 @@ import {
   type ExperienceItem,
   type Milestone,
   type Profile,
+  type SectionVideoKey,
   type ShowcaseItem,
 } from '@/data/profile';
 
@@ -59,6 +60,8 @@ export interface SpaceNode {
   colorVar: '--accent-rgb' | '--accent-2-rgb';
   /** Film modal is wider to breathe around the reel grid. */
   wide?: boolean;
+  /** Section-videos shelf (data/profile.ts sectionVideos) shown in the modal. */
+  videos?: SectionVideoKey;
   sections: readonly ModalSection[];
 }
 
@@ -80,6 +83,7 @@ export const SPACE_NODES: readonly SpaceNode[] = [
     ],
     related: ['marketing', 'education'],
     colorVar: '--accent-rgb',
+    videos: 'experience',
     sections: [
       { kind: 'chips', heading: 'Core capabilities', items: profile.expertise.it },
       { kind: 'chips', heading: 'Stack', items: profile.expertise.stack },
@@ -101,6 +105,7 @@ export const SPACE_NODES: readonly SpaceNode[] = [
     ],
     related: ['it', 'film'],
     colorVar: '--accent-2-rgb',
+    videos: 'marketing',
     sections: [
       { kind: 'chips', heading: 'Core capabilities', items: profile.expertise.marketing },
       { kind: 'milestones', heading: TRACK_LABELS.A1, items: marketingMilestones },
@@ -143,6 +148,7 @@ export const SPACE_NODES: readonly SpaceNode[] = [
     ],
     related: ['film', 'it'],
     colorVar: '--accent-rgb',
+    videos: 'education',
     sections: [
       { kind: 'education', heading: 'Degree', items: profile.education },
     ],
